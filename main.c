@@ -2,57 +2,52 @@
 
 int main(void){
 
-   ALLEGRO_DISPLAY *display = NULL;
+  const float FPS = 5;
 
-   if(!al_init()) {
-      fprintf(stderr, "failed to initialize allegro!\n");
-      return -1;
-   }
+  al_init();
 
-   display = al_create_display(SCREEN_W, SCREEN_H);
-   if(!display) {
-      fprintf(stderr, "failed to create display!\n");
-      return -1;
-   }
+  ALLEGRO_DISPLAY *display = al_create_display(SCREEN_W, SCREEN_H);
+  ALLEGRO_TIMER *timer = al_create_timer(1.0 / FPS);
+  ALLEGRO_EVENT_QUEUE *eventQueue = al_create_event_queue();
 
-   al_clear_to_color(SCREEN_COLOR);
+  al_register_event_source(eventQueue, al_get_timer_event_source(timer));
 
-   al_init_font_addon();
-   al_init_ttf_addon();
+  setupScreen();
 
-   setupScreen();
+  snake* S = newSnake();
+  drawSquare(23,4,FOOD_COLOR);
+  drawSnake(S);
+  al_flip_display();
 
+  al_rest(4.0);
+  al_destroy_display(display);
 
-   al_flip_display();
-
-
-
-   al_rest(4.0);
-   al_destroy_display(display);
-   return 0;
+  freeSnake(S);
+  return 0;
 }
 
 void setupScreen(){
 
+  al_clear_to_color(SCREEN_COLOR);
+
+  al_init_font_addon();
+  al_init_ttf_addon();
+
   al_draw_text(
     al_load_ttf_font("Comfortaa-Regular.ttf",42,ALLEGRO_TTF_NO_KERNING),
     al_map_rgb(255,255,255),578,10,ALLEGRO_ALIGN_LEFT,"jogo da"
-  );
+  ); //writes "jogo da" on screen
   al_draw_text(
     al_load_ttf_font("Comfortaa-Regular.ttf",42,ALLEGRO_TTF_NO_KERNING),
     al_map_rgb(255,255,255),568,60,ALLEGRO_ALIGN_LEFT,"cobrinha"
-  );
+  ); //writes "cobrinha" on screen
   al_draw_rectangle(10,10,SCREEN_W - 249,SCREEN_H - 9, al_map_rgb(255,255,255), 1);
-
 }
 
 void drawSquare(int x, int y, ALLEGRO_COLOR color){
 
-  if(x <= 27 && x > 0 && y <=29 && y > 0){
-    x --;
-    y --;
-    al_draw_filled_rectangle(11 + x*20, 11 + y*20, 29 + x*20, 29 + y*20, color);
-  }
+  if(x <= 27 && x > 0 && y <=29 && y > 0) //if coordinates are inside game rectangle
+    al_draw_filled_rectangle(11 + x*19, 11 + y*19, 29 + x*19, 29 + y*19, color);
 }
 
 void drawGrid(){
