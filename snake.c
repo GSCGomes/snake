@@ -11,13 +11,14 @@ snake* newSnake(void){
   S->tail = S->head; //points tail to the head cell (list is empty)
   S->head->next = NULL;
 
+  S->dir = 1; //snake starts going to the right
+
   for(int i = 0; i < sizeStart + 1; i++){
     S->tail->next = (pointer) malloc(sizeof(cell));
     S->tail = S->tail->next;
     S->tail->next = NULL;
     S->tail->x = xStart - i;
     S->tail->y = yStart;
-    S->tail->dir = 1;
   } //creates first initial cells plus the tail cell
 
   return S;
@@ -30,14 +31,13 @@ void drawSnake(snake* S){
   while(p->next != S->tail){
     drawSquare(p->next->x, p->next->y, SNAKE_COLOR);
     p = p->next;
-  } //draws every cell besides tail cell (the tail cell is used when snakes eats food)
+  } //draws every cell except tail cell (the tail cell is used when snakes eats food)
 }
 
 void updateSnake(snake *S){
 
-  pointer p = (pointer) malloc(sizeof(cell));
-  p->dir = S->head->next->dir;
-  switch(p->dir){
+  pointer p = (pointer) malloc(sizeof(cell)); //points to the new cell
+  switch(S->dir){
     case 1: //right
       p->x = S->head->next->x + 1;
       p->y = S->head->next->y;
@@ -64,6 +64,7 @@ void updateSnake(snake *S){
     p = p->next;} //iterates till "p" is the last pointer before tail
 
   drawSquare(p->x, p->y, SCREEN_COLOR); //erases last cell of snake
+  drawSquare(S->head->next->x, S->head->next->y, SNAKE_COLOR); //draws new first cell
   free(S->tail);
   S->tail = p; //new  tail is "p"
 
@@ -78,6 +79,68 @@ void freeSnake(snake *S){
     S->head = S->head->next;
     free(p);
   }
-  free(p->next);
   free(S);
+}
+
+void push(snake *S){
+
+  pointer p = S->head;
+  while(p->next != S->tail){
+    p = p->next;} //iterates till "p" is the last pointer before tail
+
+  int dx = S->tail->x - p->x;
+  int dy = S->tail->y - p->y;
+
+  p = (pointer) malloc(sizeof(cell));
+  p->x = S->tail->x + dx;
+  p->y = S->tail->y + dy;
+
+  S->tail->next = p;
+  S->tail = p;
+  p->next = NULL;
+
+}
+
+int collision(snake* S){
+
+  int exit = 0;
+
+  pointer p = S->head->next->next;
+  while(p != S->tail->next){
+    if(S->head->next->x == p->x && S->head->next->y == p->y){ // if snake ate itself
+      printf("death by self-cannibalism\n");
+      exit = 1;
+      break;
+    }
+    p = p->next;
+  }
+
+  if(S->head->next->x > 27 || S->head->next->x < 1 ||
+    S->head->next->y > 29 || S->head->next->y < 1){
+      exit = 1;
+      printf("death by head trauma\n");
+    }
+
+  return exit;
+}
+
+int snakeAte(int foodX, int foodY, snake* S){
+
+  return(
+    S->head->next->x == foodX && S->head->next->y == foodY
+  );
+}
+
+int isOverlapped(int foodX, int foodY, snake* S){
+
+  pointer p = S->head;
+  while(p != S->tail->next){
+    if(p->x == foodX && p->y == foodY){
+      overlap++;
+      return 1;
+    }
+    p = p->next;
+  }
+
+  return 0;
 }
