@@ -14,11 +14,15 @@
 #define SCREEN_COLOR al_map_rgb(8, 38, 8)
 #define SNAKE_COLOR al_map_rgb(255,255,255)
 #define FOOD_COLOR al_map_rgb(252, 138, 32)
+
+// #define SCREEN_COLOR al_map_rgb(8, 38, 8)
+// #define SNAKE_COLOR al_map_rgb(255,255,255)
+// #define FOOD_COLOR al_map_rgb(252, 138, 32)
+
 #define SCREEN_H 600
 #define SCREEN_W 800
 
 //global variables
-int overlap; //counts number of times that function overlap returns 1
 int score; //counts score
 
 

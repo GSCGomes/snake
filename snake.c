@@ -60,14 +60,14 @@ void updateSnake(snake *S){
   S->head->next = p;
   //puts new cell pointed by "p" after the head of the snake
 
-  while(p->next != S->tail){
-    p = p->next;} //iterates till "p" is the last pointer before tail
+  while(p->next != S->tail)
+    p = p->next; //iterates till "p" is the last pointer before tail
 
   drawSquare(p->x, p->y, SCREEN_COLOR); //erases last cell of snake
   drawSquare(S->head->next->x, S->head->next->y, SNAKE_COLOR); //draws new first cell
   free(S->tail);
   S->tail = p; //new  tail is "p"
-
+  S->tail->next = NULL;
 }
 
 void freeSnake(snake *S){
@@ -106,9 +106,10 @@ int collision(snake* S){
   int exit = 0;
 
   pointer p = S->head->next->next;
-  while(p != S->tail->next){
-    if(S->head->next->x == p->x && S->head->next->y == p->y){ // if snake ate itself
-      printf("death by self-cannibalism\n");
+  while(p != NULL){
+    if((S->head->next->x == p->x) && (S->head->next->y == p->y)){ // if snake ate itself
+      printf("head(%d,%d) body(%d,%d)\n",S->head->next->x,S->head->next->y,p->x,p->y);
+      printf("score = %d\ndeath by self-cannibalism\n",score);
       exit = 1;
       break;
     }
@@ -116,10 +117,11 @@ int collision(snake* S){
   }
 
   if(S->head->next->x > 27 || S->head->next->x < 1 ||
-    S->head->next->y > 29 || S->head->next->y < 1){
+    S->head->next->y > 29 || S->head->next->y < 1)
+  {
       exit = 1;
-      printf("death by head trauma\n");
-    }
+      printf("score = %d\ndeath by head trauma\n",score);
+  }
 
   return exit;
 }
@@ -136,7 +138,6 @@ int isOverlapped(int foodX, int foodY, snake* S){
   pointer p = S->head;
   while(p != S->tail->next){
     if(p->x == foodX && p->y == foodY){
-      overlap++;
       return 1;
     }
     p = p->next;

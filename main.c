@@ -3,6 +3,7 @@
 int main(void){
 
   const float FPS = 10;
+  int first = 1;
 
   time_t t;
   srand((unsigned) time(&t));
@@ -12,40 +13,92 @@ int main(void){
   al_install_keyboard();
 
   ALLEGRO_DISPLAY *display = NULL;
-  ALLEGRO_TIMER *timer = NULL;
-  ALLEGRO_EVENT_QUEUE *eventQueue = NULL;
-
-  eventQueue = al_create_event_queue();
   display = al_create_display(SCREEN_W, SCREEN_H);
+
+  INIT: while(0){};
+   //label
+
+  //declaration of allegro variables
+  ALLEGRO_EVENT_QUEUE *eventQueue = NULL;
+  ALLEGRO_EVENT event;
+  ALLEGRO_TIMER *timer = NULL;
+
+  //initialization of allegro variables
+  eventQueue = al_create_event_queue();
   timer = al_create_timer(1.0 / FPS);
 
+  //registration of allegro event sources
   al_register_event_source(eventQueue, al_get_keyboard_event_source());
-  al_register_event_source(eventQueue, al_get_timer_event_source(timer));
   al_register_event_source(eventQueue, al_get_display_event_source(display));
+  al_register_event_source(eventQueue, al_get_timer_event_source(timer));
 
   int foodX = 23;
   int foodY = 4;
+  int endGame = 0;
+  int trueDir = 1; //tells true valid direction of the snake (used to fix a bug)
 
   setupScreen();
   snake* S = newSnake();
-  //drawGrid();
+  //drawGrid;  //uncomment this line to draw a grid on screen
   drawSquare(foodX,foodY,FOOD_COLOR);
-
   drawSnake(S);
-  al_flip_display();
+
+  if(first){
+
+    al_draw_filled_rectangle(50,200,510,246,FOOD_COLOR);
+    al_draw_text(
+      al_load_ttf_font("Comfortaa-Regular.ttf",20,ALLEGRO_TTF_NO_KERNING),
+      al_map_rgb(0, 0, 0),280,210,ALLEGRO_ALIGN_CENTER,
+      "Pressione qualquer tecla para começar.");
+    al_flip_display();
+
+    while(1){
+
+      al_wait_for_event(eventQueue, &event);
+      if(event.type == ALLEGRO_EVENT_DISPLAY_CLOSE || event.keyboard.keycode == ALLEGRO_KEY_ESCAPE)
+        break;
+      else if(event.type == ALLEGRO_EVENT_KEY_DOWN){
+        al_draw_filled_rectangle(29,199,531,247,SCREEN_COLOR);
+        al_flip_display();
+        break;
+      }
+
+    }
+
+    first = 0;
+  }
+
 
   al_start_timer(timer);
 
   while(1){
 
-    ALLEGRO_EVENT event;
     al_wait_for_event(eventQueue, &event);
 
     if(event.type == ALLEGRO_EVENT_TIMER){
 
+      if(abs(trueDir - (S->dir)) == 2)
+         S->dir = trueDir;
+      else trueDir = S->dir;
+
       updateSnake(S);
-      if(collision(S))
-           break;
+      if(collision(S)){
+        if(S->head->next->y <= 14){
+          al_draw_filled_rectangle(30,390,530,436,FOOD_COLOR);
+          al_draw_text(
+            al_load_ttf_font("Comfortaa-Regular.ttf",20,ALLEGRO_TTF_NO_KERNING),
+            al_map_rgb(0, 0, 0),280,400,ALLEGRO_ALIGN_CENTER,
+            "Pressione qualquer tecla para jogar de novo.");
+          } else{
+            al_draw_filled_rectangle(30,100,530,146,FOOD_COLOR);
+            al_draw_text(
+              al_load_ttf_font("Comfortaa-Regular.ttf",20,ALLEGRO_TTF_NO_KERNING),
+              al_map_rgb(0, 0, 0),280,110,ALLEGRO_ALIGN_CENTER,
+              "Pressione qualquer tecla para jogar de novo.");
+          }
+        al_flip_display();
+        break;
+      }
       if(snakeAte(foodX,foodY,S)){
         updateScore();
         do{
@@ -63,35 +116,45 @@ int main(void){
       switch (event.keyboard.keycode) {
         case ALLEGRO_KEY_RIGHT:
           if(S->dir == 3) break;
-          else {S->dir = 1; break;}
+          S->dir = 1; break;
         case ALLEGRO_KEY_UP:
           if(S->dir == 4) break;
-          else {S->dir = 2; break;}
+          S->dir = 2; break;
         case ALLEGRO_KEY_LEFT:
           if(S->dir == 1) break;
-          else {S->dir = 3; break;}
+          S->dir = 3; break;
         case ALLEGRO_KEY_DOWN:
           if(S->dir == 2) break;
-          else {S->dir = 4; break;}
+          S->dir = 4; break;
       }
     }
-    else if(event.type == ALLEGRO_EVENT_DISPLAY_CLOSE){
+    else if(event.type == ALLEGRO_EVENT_DISPLAY_CLOSE || event.keyboard.keycode == ALLEGRO_KEY_ESCAPE){
+      endGame = 1;
       break;
     }
   }
 
-  al_rest(0.2);
-  al_destroy_timer(timer);
-  al_destroy_display(display);
-
   freeSnake(S);
 
-  if(overlap == 1)
-    printf("%d overlap\n",overlap);
-  else printf("%d overlaps\n",overlap);
+  while(!endGame){
 
-  printf("score = %d\n",score);
+    al_wait_for_event(eventQueue, &event);
 
+    if(event.type == ALLEGRO_EVENT_DISPLAY_CLOSE || event.keyboard.keycode == ALLEGRO_KEY_ESCAPE)
+      break;
+    else if(event.type == ALLEGRO_EVENT_KEY_DOWN){
+
+      al_destroy_event_queue(eventQueue);
+      al_destroy_timer(timer);
+
+      score = 0;
+      goto INIT;
+    }
+  }
+
+
+  al_destroy_display(display);
+  al_rest(0.05);
   return 0;
 }
 
@@ -133,10 +196,10 @@ void drawGrid(){
 
 void updateScore(){
 
-  al_draw_filled_rectangle(613,170,738,240,SCREEN_COLOR);
+  al_draw_filled_rectangle(613,200,738,270,SCREEN_COLOR);
   score++;
   al_draw_textf(
     al_load_ttf_font("Comfortaa-Regular.ttf",60,ALLEGRO_TTF_NO_KERNING),
-    al_map_rgb(255,255,255),670,170,ALLEGRO_ALIGN_CENTER,"%d",score);
+    al_map_rgb(255,255,255),670,200,ALLEGRO_ALIGN_CENTER,"%d",score);
 
 }
