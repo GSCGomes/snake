@@ -43,13 +43,13 @@ int main(void){
   drawSquare(foodX,foodY,FOOD_COLOR);
   drawSnake(S);
 
-  if(first){
+  if(first){ //if the user just openned the game
 
     al_draw_filled_rectangle(50,200,510,246,FOOD_COLOR);
     al_draw_text(
       al_load_ttf_font("Comfortaa-Regular.ttf",20,ALLEGRO_TTF_NO_KERNING),
       al_map_rgb(0, 0, 0),280,210,ALLEGRO_ALIGN_CENTER,
-      "Pressione qualquer tecla para começar.");
+      "Pressione qualquer tecla para começar."); //start up text
     al_flip_display();
 
     while(1){
@@ -57,17 +57,15 @@ int main(void){
       al_wait_for_event(eventQueue, &event);
       if(event.type == ALLEGRO_EVENT_DISPLAY_CLOSE || event.keyboard.keycode == ALLEGRO_KEY_ESCAPE)
         break;
-      else if(event.type == ALLEGRO_EVENT_KEY_DOWN){
-        al_draw_filled_rectangle(29,199,531,247,SCREEN_COLOR);
+      else if(event.type == ALLEGRO_EVENT_KEY_DOWN){ //if any key was pressed
+        al_draw_filled_rectangle(29,199,531,247,SCREEN_COLOR); //erase start up text
         al_flip_display();
         break;
       }
-
     }
 
     first = 0;
   }
-
 
   al_start_timer(timer);
 
@@ -77,12 +75,15 @@ int main(void){
 
     if(event.type == ALLEGRO_EVENT_TIMER){
 
-      if(abs(trueDir - (S->dir)) == 2)
-         S->dir = trueDir;
-      else trueDir = S->dir;
+      if(abs(trueDir - (S->dir)) != 2) //if the new direction is valid
+         trueDir = S->dir;
+      else S->dir = trueDir;
 
       updateSnake(S);
-      if(collision(S)){
+
+      if(collision(S)){ //if snake died
+        al_flip_display();
+        al_rest(0.5);
         if(S->head->next->y <= 14){
           al_draw_filled_rectangle(30,390,530,436,FOOD_COLOR);
           al_draw_text(
@@ -97,9 +98,11 @@ int main(void){
               "Pressione qualquer tecla para jogar de novo.");
           }
         al_flip_display();
+        al_rest(0.25);
         break;
       }
-      if(snakeAte(foodX,foodY,S)){
+
+      if(snakeAte(foodX,foodY,S)){ //if snake ate
         updateScore();
         do{
           foodX = (rand() % 26) + 1;
@@ -107,7 +110,7 @@ int main(void){
         }while(isOverlapped(foodX,foodY,S));
         drawSquare(foodX,foodY,FOOD_COLOR);
 
-        push(S);
+        push(S); //add new cell to the end of the snake
       }
 
       al_flip_display();
@@ -126,6 +129,7 @@ int main(void){
         case ALLEGRO_KEY_DOWN:
           if(S->dir == 2) break;
           S->dir = 4; break;
+        default: break;
       }
     }
     else if(event.type == ALLEGRO_EVENT_DISPLAY_CLOSE || event.keyboard.keycode == ALLEGRO_KEY_ESCAPE){
@@ -154,7 +158,6 @@ int main(void){
 
 
   al_destroy_display(display);
-  al_rest(0.05);
   return 0;
 }
 

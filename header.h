@@ -11,20 +11,21 @@
 #include <allegro5/allegro_native_dialog.h>
 
 //defines
+//light theme
 #define SCREEN_COLOR al_map_rgb(8, 38, 8)
 #define SNAKE_COLOR al_map_rgb(255,255,255)
 #define FOOD_COLOR al_map_rgb(252, 138, 32)
 
-// #define SCREEN_COLOR al_map_rgb(8, 38, 8)
-// #define SNAKE_COLOR al_map_rgb(255,255,255)
-// #define FOOD_COLOR al_map_rgb(252, 138, 32)
+//dark theme
+// #define SCREEN_COLOR al_map_rgb(0, 0, 0)
+// #define SNAKE_COLOR al_map_rgb(72, 255, 0)
+// #define FOOD_COLOR al_map_rgb(140, 0, 255)
 
 #define SCREEN_H 600
 #define SCREEN_W 800
 
 //global variables
 int score; //counts score
-
 
 //structures
 typedef struct cell* pointer; //pointer to a cell of the snake (cell of the linked list)
@@ -44,9 +45,10 @@ typedef struct snake{
 
 //function prototypes
 void drawSquare(int, int, ALLEGRO_COLOR); //receives coordinates and color and draws a square inside game rectangle
-snake* newSnake(void); //creates a new snake with 4 cells plus the tail and returns the pointer to the snake
 void setupScreen(); //creates screen default structures
 void drawGrid(); //draws a grid in the game rectangle
+void updateScore(); //updates score value and score drawing on screen
+snake* newSnake(void); //creates a new snake with 4 cells plus the tail and returns the pointer to the snake
 void drawSnake(snake*); //receives a pointer to the snake and draws it
 void updateSnake(snake *); //receives a pointer to the snake and updates it based on "dir" variable of its cells
 void freeSnake(snake *); // deallocates the memory allocated for the snake and its cells
@@ -54,7 +56,5 @@ int collision(snake *); //checks if snake collided with the walls or with itself
 int snakeAte(int, int, snake* ); //checks if snake ate
 void push(snake* ); //adds new cell at the end of the snake
 int isOverlapped(int, int, snake* ); //checks food and snake are overlapped
-void updateScore(); //updates score value and score drawing on screen
-
 
 #endif

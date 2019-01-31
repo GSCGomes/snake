@@ -108,8 +108,7 @@ int collision(snake* S){
   pointer p = S->head->next->next;
   while(p != NULL){
     if((S->head->next->x == p->x) && (S->head->next->y == p->y)){ // if snake ate itself
-      printf("head(%d,%d) body(%d,%d)\n",S->head->next->x,S->head->next->y,p->x,p->y);
-      printf("score = %d\ndeath by self-cannibalism\n",score);
+      printf("death by self-cannibalism, score was %d\n",score);
       exit = 1;
       break;
     }
@@ -120,7 +119,7 @@ int collision(snake* S){
     S->head->next->y > 29 || S->head->next->y < 1)
   {
       exit = 1;
-      printf("score = %d\ndeath by head trauma\n",score);
+      printf("death by head trauma, score was %d\n",score);
   }
 
   return exit;
