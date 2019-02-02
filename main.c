@@ -82,6 +82,7 @@ int main(void){
       updateSnake(S);
 
       if(collision(S)){ //if snake died
+
         al_flip_display();
         al_rest(0.5);
         if(S->head->next->y <= 14){
@@ -98,7 +99,6 @@ int main(void){
               "Pressione qualquer tecla para jogar de novo.");
           }
         al_flip_display();
-        al_rest(0.25);
         break;
       }
 
@@ -139,6 +139,8 @@ int main(void){
   }
 
   freeSnake(S);
+
+  al_flush_event_queue(eventQueue);
 
   while(!endGame){
 
