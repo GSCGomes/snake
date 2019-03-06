@@ -2,7 +2,7 @@
 
 int main(void){
 
-  const float FPS = 10;
+  const float FPS = 10.0;
   int first = 1;
 
   time_t t;
