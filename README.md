@@ -2,18 +2,22 @@
 This is a snake game made in C language using the Allegro5 library.
 To run this you will need to install the Allegro5 library and a C language compiler.
 
+# Screenshots
+<img src="/Screenshots/snake1.png" width="275"> <img src="/Screenshots/snake2.png" width="275"> <img src="/Screenshots/snake3.png" width="275">
+
+
 ## About the game
 I decided to make this little game just to refresh some programming concepts after a
 lot of time without doing any programming. The scope was to make it simple and functional.
 The title of the game "jogo da cobrinha" is the portuguese translation for snake game.
 
 ## Compilation
-  if you use GCC compiler, use the following command line while in the repository folder
-  $   gcc -Wall *.c -o "snake" -lallegro -lallegro_primitives -lallegro_font -lallegro_ttf
+  If you use GCC compiler, use the following command line while in the repository folder
+  `gcc -Wall *.c -o "snake" -lallegro -lallegro_primitives -lallegro_font -lallegro_ttf`
 
 ## Execution
-  to execute, just run the executable file generated after the compilation
-  $ ./snake
+  To execute, just run the executable file generated after the compilation
+  `./snake`
 
 ## Room for improvement
 Of course there is much room for improvement, but I decided to move on to more complex
