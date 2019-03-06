@@ -2,7 +2,7 @@
 This is a snake game made in C language using the Allegro5 library.
 To run this you will need to install the Allegro5 library and a C language compiler.
 
-# Screenshots
+## Screenshots
 <img src="/Screenshots/snake1.png" width="275"> <img src="/Screenshots/snake2.png" width="275"> <img src="/Screenshots/snake3.png" width="275">
 
 
